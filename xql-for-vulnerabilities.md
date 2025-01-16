@@ -111,4 +111,24 @@ dataset = findings
 ) as asset asset.xdm.asset.id = xdm.finding.asset_id
 | comp count(name) as Total_CVE_per_CloudAccounts by CloudAccount
 ``
-
+## With EPSS
+```bash
+dataset = findings 
+| filter (xdm.finding.category = """VULNERABILITY""") 
+| alter cve_id = xdm.finding.normalized_fields -> ["xdm.vulnerability.cve_id"]
+| alter severity = xdm.finding.normalized_fields -> ["xdm.vulnerability.severity"]
+| alter cvss_score = xdm.finding.normalized_fields -> ["xdm.vulnerability.cvss_score"]
+| alter has_a_fix = xdm.finding.normalized_fields -> ["xdm.vulnerability.has_a_fix"]
+| filter xdm.finding.owner = "CWP"
+| join (
+    dataset = asset_inventory      
+    | filter xdm.asset.type.category in ("VM Instance", "Kubernetes Cluster") 
+    | fields xdm.asset.id, xdm.asset.type.category, xdm.asset.type.class, xdm.asset.realm, xdm.asset.provider, xdm.asset.name, xdm.asset.type.id, xdm.asset.type.name
+) as asset asset.xdm.asset.id = xdm.finding.asset_id
+| fields  xdm.asset.name, xdm.asset.type.id, xdm.asset.type.name, xdm.asset.provider, xdm.asset.realm, cve_id, severity, cvss_score, has_a_fix 
+| filter severity = "Critical"
+| join (
+    dataset=va_cves 
+    | fields affected_products, name, exploitability_score AS EPSS
+) as cve_va cve_va.name = cve_id 
+```
