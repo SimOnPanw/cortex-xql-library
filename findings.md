@@ -85,7 +85,24 @@ dataset = findings
 ```
 
 
-```bash
+```
+dataset = findings 
+| filter (xdm.finding.category = """VULNERABILITY""") 
+| alter cve_id = xdm.finding.normalized_fields -> ["xdm.vulnerability.cve_id"]
+| alter severity = xdm.finding.normalized_fields -> ["xdm.vulnerability.severity"]
+| join (
+    dataset = asset_inventory      
+    | filter xdm.asset.type.category in ("VM Instance", "Kubernetes Cluster") 
+    | fields xdm.asset.id, xdm.asset.type.category, xdm.asset.type.class, xdm.asset.realm, xdm.asset.provider, xdm.asset.name, xdm.asset.type.id, xdm.asset.type.name
+) as asset asset.xdm.asset.id = xdm.finding.asset_id
+| filter severity = "Critical"
+
+| comp count(cve_id) as Total_Critical_CVE_per_Instance by xdm.finding.asset_name
+| sort desc Total_Critical_CVE_per_Instance
+```
+
+Or the graph view
+```
 dataset = findings 
 | filter (xdm.finding.category = """VULNERABILITY""") 
 | alter cve_id = xdm.finding.normalized_fields -> ["xdm.vulnerability.cve_id"]
