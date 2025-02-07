@@ -65,6 +65,48 @@ dataset = asset_inventory
 | fields name, instruction, cve_id
 ```
 
+## Add computation
+
+```bash
+dataset = asset_inventory 
+| filter xdm.asset.provider = "AWS"
+| filter xdm.asset.type.name = "Container Image"
+| alter name = json_extract_scalar(xdm.asset.normalized_fields, "$.CWP['xdm.asset.name']")
+| fields xdm.asset.id, name
+| join (dataset = findings 
+    | filter (xdm.finding.category = "VULNERABILITY") 
+    | alter cve_id = xdm.finding.normalized_fields -> ["xdm.vulnerability.cve_id"]
+) as findings xdm.asset.id = findings.xdm.finding.asset_id 
+| comp count(cve_id) as TotalVulnerabilities by name 
+| sort desc TotalVulnerabilities 
+```
+
+Other example:  
+
+```bash
+dataset = findings 
+| join (
+    dataset = asset_inventory      
+    | filter xdm.asset.type.category in ("VM Instance", "Image", "Kubernetes Cluster") 
+    | fields xdm.asset.id, xdm.asset.type.category, xdm.asset.type.class, xdm.asset.realm, xdm.asset.provider, xdm.asset.name, xdm.asset.type.id, xdm.asset.type.name
+) as asset asset.xdm.asset.id = xdm.finding.asset_id
+| comp count(xdm.asset.id) as Total_Findings by xdm.asset.name, xdm.asset.type.name, xdm.finding.category
+| sort desc xdm.asset.name
+```
+
+```bash
+dataset = findings 
+| filter (xdm.finding.category = "VULNERABILITY") 
+| alter cve_id = xdm.finding.normalized_fields -> ["xdm.vulnerability.cve_id"]
+| join (
+    dataset = asset_inventory      
+    | filter xdm.asset.type.category in ("VM Instance", "Image", "Kubernetes Cluster") 
+    | fields xdm.asset.id, xdm.asset.type.category, xdm.asset.type.class, xdm.asset.realm, xdm.asset.provider, xdm.asset.name, xdm.asset.type.id, xdm.asset.type.name
+) as asset asset.xdm.asset.id = xdm.finding.asset_id
+| comp count(cve_id) as Total_CVE_per_Assets by xdm.asset.name, xdm.asset.type.name
+| sort desc Total_CVE_per_Assets
+```
+
 ## AWS confused deputy problem
 
 ```bash
@@ -77,7 +119,7 @@ dataset = asset_inventory
 | filter aws_statement = "*" | filter myaccount not in (dataset = asset_inventory | filter xdm.asset.provider = "aws" | alter aws_account = xdm.asset.realm | dedup aws_account | fields aws_account)
 ```
 
-Link of documentation: [AWS confused deputy problem](https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html)
+Link to the AWS Documentation: [AWS confused deputy problem](https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html)
 
 
 ## Create a lookup dataset
