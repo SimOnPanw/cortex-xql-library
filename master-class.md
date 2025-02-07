@@ -2,7 +2,7 @@
 
 ## Documentation
 
-[https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Get-started-with-XQL](Get started with XQL)
+(https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Get-started-with-XQL)[Get started with XQL]
 
 ## Get Asset inventory
 
@@ -77,7 +77,7 @@ dataset = asset_inventory
 | filter aws_statement = "*" | filter myaccount not in (dataset = asset_inventory | filter xdm.asset.provider = "aws" | alter aws_account = xdm.asset.realm | dedup aws_account | fields aws_account)
 ```
 
-Link of documentation: [https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html](AWS confused deputy problem)
+Link of documentation: (https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html)[AWS confused deputy problem]
 
 
 ## Create a lookup dataset
