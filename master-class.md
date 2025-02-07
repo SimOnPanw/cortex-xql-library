@@ -250,8 +250,4 @@ dataset = asset_inventory
 
 ---
 
-## Next Steps / Best Practices
-
-1. **Check Documentation**: Refer to the [official Cortex XDR documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Get-started-with-XQL) for updates on syntax and new features.
-
 **Happy Querying!**
