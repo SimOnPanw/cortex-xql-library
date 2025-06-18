@@ -264,8 +264,10 @@ dataset = sugar_wrapped
 | alter x = root -> B.D{}
 | alter x1 = x->[1].E
 
-/*
-root = {
+The json is:
+
+```json
+{
   "A": "10",
   "B": {
     "C": "20",
@@ -284,7 +286,7 @@ root = {
     ]
   }
 }*/
-```
+``` 
 --- 
 
 **Happy Querying!**
