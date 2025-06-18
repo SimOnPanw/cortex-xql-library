@@ -250,4 +250,41 @@ dataset = asset_inventory
 
 ---
 
+## Understanding Syntactic Sugar in JSON Extraction
+
+Use the following XQL query to see the different applications of syntactic sugar to extract values from the imported dataset. Run query 3 - 9 incrementally to see the extracted results.
+
+```bash
+dataset = sugar_wrapped 
+| alter a1 = root->A
+| alter c1 = root->B.C
+| alter d1 = root->B.D[1].E
+| alter f = root->B.F[]
+| alter f1 = arrayindex(f, 1)
+| alter x = root -> B.D{}
+| alter x1 = x->[1].E
+
+/*
+root = {
+  "A": "10",
+  "B": {
+    "C": "20",
+    "D": [
+      {
+        "E": 30
+      },
+      {
+        "E": 40
+      }
+    ],
+    "F": [
+      50,
+      60,
+      70
+    ]
+  }
+}*/
+```
+--- 
+
 **Happy Querying!**
