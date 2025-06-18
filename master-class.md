@@ -14,6 +14,7 @@ Welcome to the **XQL Master Class** workshop.
 7. [Other Query Examples](#other-query-examples)  
 8. [AWS Confused Deputy Problem](#aws-confused-deputy-problem)  
 9. [Creating a Lookup Dataset](#creating-a-lookup-dataset)  
+10. [Understanding Syntactic Sugar in JSON Extraction](#understanding-syntactic-sugar-in-json-extraction)  
 
 ---
 
@@ -263,7 +264,7 @@ dataset = sugar_wrapped
 | alter f1 = arrayindex(f, 1)
 | alter x = root -> B.D{}
 | alter x1 = x->[1].E
-
+```
 The json is:
 
 ```json
